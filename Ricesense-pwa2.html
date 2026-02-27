@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2E7D32">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>RiceSense</title>
+<link rel="manifest" href="#" id="manifest-link">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+<style>
+:root {
+  --green-deep: #1B5E20;
+  --green-primary: #2E7D32;
+  --green-mid: #388E3C;
+  --green-light: #4CAF50;
+  --green-pale: #A5D6A7;
+  --green-bg: #F1F8E9;
+  --green-card: #E8F5E9;
+  --yellow-gold: #F9A825;
+  --yellow-light: #FDD835;
+  --yellow-pale: #FFF9C4;
+  --text-dark: #1B2E1C;
+  --text-mid: #2E4A2F;
+  --text-muted: #5A7A5B;
+  --white: #FFFFFF;
+  --shadow: 0 4px 20px rgba(46,125,50,0.15);
+  --shadow-lg: 0 8px 32px rgba(46,125,50,0.2);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--green-bg);
+  color: var(--text-dark);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; min-height: 100vh; flex-direction: column; animation: fadeIn 0.3s ease; }
+.screen.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--green-primary);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.topbar-title { font-size: 18px; font-weight: 700; flex: 1; }
+.topbar-subtitle { font-size: 12px; opacity: 0.8; }
+.topbar-icon { cursor: pointer; padding: 4px; border-radius: 8px; transition: var(--transition); }
+.topbar-icon:hover { background: rgba(255,255,255,0.2); }
+.back-btn { cursor: pointer; display: flex; align-items: center; }
+
+/* ── SCROLL CONTENT ── */
+.scroll-content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.scroll-content::-webkit-scrollbar { display: none; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+.card:active { transform: scale(0.99); }
+.card-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+
+/* ── BUTTONS ── */
+.btn {
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 20px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  letter-spacing: 0.5px;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--green-primary); color: white; box-shadow: 0 4px 15px rgba(46,125,50,0.4); }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-accent { background: var(--yellow-gold); color: var(--text-dark); box-shadow: 0 4px 15px rgba(249,168,37,0.4); }
+.btn-accent:hover { background: #F57F17; }
+.btn-outline { background: transparent; color: var(--green-primary); border: 2px solid var(--green-primary); }
+.btn-danger { background: #C62828; color: white; }
+.btn-sm { padding: 8px 14px; font-size: 13px; width: auto; }
+.btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 10px; }
+
+/* ── FORM INPUTS ── */
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+.input-label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.input-field {
+  background: var(--green-bg);
+  border: 2px solid #C8E6C9;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  color: var(--text-dark);
+  transition: var(--transition);
+  width: 100%;
+}
+.input-field:focus { outline: none; border-color: var(--green-primary); background: white; box-shadow: 0 0 0 3px rgba(46,125,50,0.1); }
+.input-field::placeholder { color: #9E9E9E; }
+select.input-field { cursor: pointer; }
+
+/* ── STATUS / ALERTS ── */
+.status-msg { font-size: 13px; padding: 10px 14px; border-radius: 8px; text-align: center; }
+.status-error { background: #FFEBEE; color: #C62828; }
+.status-success { background: #E8F5E9; color: var(--green-primary); }
+.status-info { background: var(--yellow-pale); color: #F57F17; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  background: white;
+  display: flex;
+  padding: 8px 0 12px;
+  border-top: 1px solid #E8F5E9;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(46,125,50,0.1);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 6px 4px;
+  border-radius: 12px;
+  transition: var(--transition);
+  color: var(--text-muted);
+}
+.nav-item.active { color: var(--green-primary); }
+.nav-item .material-icons-round { font-size: 24px; }
+.nav-item span:last-child { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+
+/* ── LOGIN SCREEN ── */
+#screen-login {
+  background: linear-gradient(180deg, var(--green-primary) 42%, var(--green-bg) 42%);
+  min-height: 100vh;
+}
+.login-hero {
+  background: var(--green-primary);
+  padding: 40px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.login-logo { font-size: 72px; margin-bottom: 4px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.login-title { font-family: 'DM Serif Display', serif; font-size: 36px; color: white; }
+.login-subtitle { font-size: 15px; color: var(--green-pale); font-weight: 400; }
+.login-form {
+  background: white;
+  margin: 0 20px;
+  border-radius: 24px;
+  padding: 28px 24px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  top: -20px;
+}
+.login-divider { text-align: center; color: var(--text-muted); font-size: 13px; margin: 4px 0; }
+.login-footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px; }
+
+/* ── SENSOR CARD ── */
+.sensor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sensor-item {
+  background: var(--green-card);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sensor-icon { font-size: 28px; }
+.sensor-value { font-size: 22px; font-weight: 800; color: var(--green-primary); }
+.sensor-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.progress-bar { height: 6px; background: #C8E6C9; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+
+/* ── VALVE CARD ── */
+.valve-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--green-bg); }
+.valve-row:last-child { border-bottom: none; }
+.valve-info { display: flex; flex-direction: column; gap: 4px; }
+.valve-name { font-size: 16px; font-weight: 700; }
+.valve-status { font-size: 12px; font-weight: 600; }
+.valve-status.open { color: var(--green-light); }
+.valve-status.closed { color: #EF5350; }
+.valve-btns { display: flex; gap: 8px; }
+
+/* ── GROWTH STAGE ── */
+.stage-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: white;
+}
+.harvest-banner {
+  background: linear-gradient(135deg, var(--yellow-gold), #F57F17);
+  border-radius: var(--radius);
+  padding: 18px;
+  color: white;
+  text-align: center;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(249,168,37,0.4); } 50% { box-shadow: 0 0 0 12px rgba(249,168,37,0); } }
+
+/* ── WEATHER ── */
+.weather-main { display: flex; align-items: center; gap: 16px; }
+.weather-emoji { font-size: 56px; }
+.weather-temp { font-size: 48px; font-weight: 800; color: var(--green-primary); line-height: 1; }
+.weather-desc { font-size: 15px; color: var(--text-muted); }
+.weather-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.weather-detail-item { background: var(--green-card); border-radius: 10px; padding: 10px 12px; }
+.weather-detail-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+.weather-detail-value { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+.forecast-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+.forecast-scroll::-webkit-scrollbar { display: none; }
+.forecast-item { background: var(--green-card); border-radius: 12px; padding: 12px 14px; min-width: 100px; text-align: center; flex-shrink: 0; }
+.forecast-day { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+.forecast-emoji { font-size: 28px; margin: 6px 0; }
+.forecast-temp { font-size: 16px; font-weight: 800; color: var(--green-primary); }
+.forecast-rain { font-size: 11px; color: #1565C0; font-weight: 600; }
+.irrigate-banner { border-radius: var(--radius-sm); padding: 14px; display: flex; align-items: center; gap: 12px; }
+.irrigate-yes { background: #E8F5E9; color: var(--green-primary); }
+.irrigate-no { background: #E3F2FD; color: #1565C0; }
+
+/* ── NOTIFICATIONS ── */
+.notif-item { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--green-bg); }
+.notif-item:last-child { border-bottom: none; }
+.notif-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--green-primary); flex-shrink: 0; margin-top: 6px; }
+.notif-dot.read { background: #BDBDBD; }
+.notif-title { font-size: 14px; font-weight: 700; }
+.notif-body { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+.notif-time { font-size: 11px; color: #9E9E9E; margin-top: 4px; }
+
+/* ── REPORT ── */
+.report-item { padding: 14px 0; border-bottom: 1px solid var(--green-bg); }
+.report-item:last-child { border-bottom: none; }
+.report-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.report-title { font-size: 14px; font-weight: 700; }
+.report-status { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 700; }
+.report-status.open { background: #FFEBEE; color: #C62828; }
+.report-status.resolved { background: #E8F5E9; color: var(--green-primary); }
+.report-body { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+.report-meta { font-size: 11px; color: #9E9E9E; margin-top: 4px; }
+
+/* ── FARMER LIST ── */
+.farmer-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--green-card); border-radius: var(--radius-sm); margin-bottom: 10px; cursor: pointer; transition: var(--transition); }
+.farmer-item:active { transform: scale(0.98); }
+.farmer-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--green-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; flex-shrink: 0; }
+.farmer-info { flex: 1; }
+.farmer-name { font-size: 15px; font-weight: 700; }
+.farmer-detail { font-size: 12px; color: var(--text-muted); }
+
+/* ── STAT CARDS ── */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.stat-card { background: var(--green-card); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
+.stat-value { font-size: 28px; font-weight: 800; color: var(--green-primary); }
+.stat-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+
+/* ── ADMIN MENU ITEMS ── */
+.menu-item { display: flex; align-items: center; gap: 14px; padding: 16px; background: var(--green-card); border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); margin-bottom: 10px; }
+.menu-item:active { transform: scale(0.98); }
+.menu-item-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--green-primary); display: flex; align-items: center; justify-content: center; color: white; }
+.menu-item-text { flex: 1; }
+.menu-item-title { font-size: 15px; font-weight: 700; }
+.menu-item-sub { font-size: 12px; color: var(--text-muted); }
+
+/* ── CHIP ── */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; border: 2px solid; cursor: pointer; transition: var(--transition); }
+.chip.selected { background: var(--green-primary); color: white; border-color: var(--green-primary); }
+.chip.unselected { background: transparent; color: var(--green-primary); border-color: var(--green-primary); }
+.chips-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── LOADING ── */
+.loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 14px; color: var(--text-muted); }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--green-pale); border-top-color: var(--green-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--text-dark); color: white; padding: 12px 20px;
+  border-radius: 24px; font-size: 14px; font-weight: 500;
+  z-index: 9999; opacity: 0; transition: all 0.3s ease; pointer-events: none;
+  white-space: nowrap; max-width: 90%;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 500; align-items: flex-end; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: white; border-radius: 24px 24px 0 0; padding: 24px;
+  width: 100%; max-height: 85vh; overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 40px; height: 4px; background: #E0E0E0; border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: var(--text-dark); }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--green-bg); margin: 4px 0; }
+
+/* ── PROFILE ── */
+.profile-avatar { width: 72px; height: 72px; border-radius: 20px; background: var(--green-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 700; margin: 0 auto 12px; }
+.profile-name { font-size: 20px; font-weight: 800; text-align: center; }
+.profile-role { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+
+/* ── SECTION LABEL ── */
+.section-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 4px 0; }
+
+/* ── INSTALL BANNER ── */
+#install-banner {
+  display: none; background: var(--green-primary); color: white;
+  padding: 12px 16px; align-items: center; gap: 12px; cursor: pointer;
+}
+#install-banner.show { display: flex; }
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- LOGIN SCREEN                                 -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-hero">
+    <div class="login-logo">🌾</div>
+    <div class="login-title">RiceSense</div>
+    <div class="login-subtitle">Smart Irrigation Control</div>
+  </div>
+  <div class="login-form">
+    <div class="input-group">
+      <label class="input-label">Email Address</label>
+      <input type="email" class="input-field" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')document.getElementById('login-password').focus()">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Password</label>
+      <input type="password" class="input-field" id="login-password" placeholder="••••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">
+      <span class="material-icons-round">login</span> LOGIN
+    </button>
+    <div id="login-status" class="status-msg" style="display:none"></div>
+    <div class="login-divider">Don't have an account?</div>
+    <button class="btn btn-accent" onclick="showScreen('screen-signup')">
+      <span class="material-icons-round">person_add</span> SIGN UP
+    </button>
+  </div>
+  <div class="login-footer">Multi-Irrigation IoT System</div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- SIGNUP SCREEN                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-signup" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showScreen('screen-login')">arrow_back</span>
+    <div><div class="topbar-title">Create Account</div><div class="topbar-subtitle">Farmer Registration</div></div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">Personal Information</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Full Name</label><input type="text" class="input-field" id="signup-name" placeholder="Juan dela Cruz"></div>
+        <div class="input-group"><label class="input-label">Email Address</label><input type="email" class="input-field" id="signup-email" placeholder="you@example.com"></div>
+        <div class="input-group"><label class="input-label">Phone Number</label><input type="tel" class="input-field" id="signup-phone" placeholder="+63 9XX XXX XXXX"></div>
+        <div class="input-group"><label class="input-label">Farm Location</label><input type="text" class="input-field" id="signup-location" placeholder="e.g. Iloilo City"></div>
+        <div class="input-group"><label class="input-label">Password</label><input type="password" class="input-field" id="signup-password" placeholder="Minimum 6 characters"></div>
+        <div class="input-group"><label class="input-label">Confirm Password</label><input type="password" class="input-field" id="signup-confirm" placeholder="Re-enter password"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="doSignup()">
+      <span class="material-icons-round">how_to_reg</span> CREATE ACCOUNT
+    </button>
+    <div id="signup-status" class="status-msg" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER DASHBOARD                             -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-dashboard" class="screen">
+  <div class="topbar">
+    <div style="flex:1"><div class="topbar-title" id="dash-greeting">Dashboard</div><div class="topbar-subtitle" id="dash-location">RiceSense</div></div>
+    <span class="material-icons-round topbar-icon" onclick="showFarmerScreen('screen-farmer-notifications')">notifications</span>
+    <span class="material-icons-round topbar-icon" onclick="showFarmerScreen('screen-farmer-profile')">account_circle</span>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content" id="dash-content">
+    <div class="loading"><div class="spinner"></div><span>Loading sensors...</span></div>
+  </div>
+  <div class="bottom-nav" id="farmer-nav">
+    <div class="nav-item active" onclick="switchFarmerTab('screen-farmer-dashboard',this)">
+      <span class="material-icons-round">dashboard</span><span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-valve',this)">
+      <span class="material-icons-round">water</span><span>Valve</span>
+    </div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-crop',this)">
+      <span class="material-icons-round">grass</span><span>Crop</span>
+    </div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-weather',this)">
+      <span class="material-icons-round">cloud</span><span>Weather</span>
+    </div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-report',this)">
+      <span class="material-icons-round">report</span><span>Report</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER VALVE CONTROL                         -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-valve" class="screen">
+  <div class="topbar">
+    <div style="flex:1"><div class="topbar-title">Valve Control</div><div class="topbar-subtitle">Field Irrigation</div></div>
+    <span class="material-icons-round topbar-icon" onclick="loadValveStates()">refresh</span>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card" id="valve-status-card">
+      <div class="card-title">Valve Status</div>
+      <div id="valve-rows"><div class="loading"><div class="spinner"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Scheduled Irrigation</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Irrigation Time</label><input type="time" class="input-field" id="sched-time" value="06:00"></div>
+        <div class="input-group">
+          <label class="input-label">Select Valve</label>
+          <div class="chips-row" id="valve-chips">
+            <div class="chip selected" onclick="selectValveChip(1,this)">Valve 1</div>
+            <div class="chip unselected" onclick="selectValveChip(2,this)">Valve 2</div>
+            <div class="chip unselected" onclick="selectValveChip(3,this)">Both</div>
+          </div>
+        </div>
+        <div class="input-group"><label class="input-label">Duration (minutes)</label><input type="number" class="input-field" id="sched-duration" value="30" min="1" max="120"></div>
+        <div id="irrigation-advice" class="irrigate-banner irrigate-yes">
+          <span class="material-icons-round">water_drop</span>
+          <span style="font-size:13px;font-weight:600">Loading recommendation...</span>
+        </div>
+        <button class="btn btn-primary" onclick="saveSchedule()">
+          <span class="material-icons-round">schedule</span> SAVE SCHEDULE
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-dashboard',this)"><span class="material-icons-round">dashboard</span><span>Dashboard</span></div>
+    <div class="nav-item active" onclick="switchFarmerTab('screen-farmer-valve',this)"><span class="material-icons-round">water</span><span>Valve</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-crop',this)"><span class="material-icons-round">grass</span><span>Crop</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-weather',this)"><span class="material-icons-round">cloud</span><span>Weather</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-report',this)"><span class="material-icons-round">report</span><span>Report</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER CROP MONITOR                          -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-crop" class="screen">
+  <div class="topbar">
+    <div style="flex:1"><div class="topbar-title">Crop Monitor</div><div class="topbar-subtitle">Rice Growth Tracker</div></div>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">Planting Setup</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Plantation Date</label><input type="date" class="input-field" id="plant-date"></div>
+        <div class="input-group">
+          <label class="input-label">Soil Type</label>
+          <select class="input-field" id="soil-type">
+            <option value="Clay">Clay</option>
+            <option value="Clay Loam" selected>Clay Loam</option>
+            <option value="Loam">Loam</option>
+            <option value="Sandy Loam">Sandy Loam</option>
+            <option value="Sandy">Sandy</option>
+            <option value="Silty Loam">Silty Loam</option>
+            <option value="Silty Clay">Silty Clay</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="saveCropSettings()">
+          <span class="material-icons-round">save</span> SAVE SETTINGS
+        </button>
+      </div>
+    </div>
+    <div id="crop-info-cards"></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-dashboard',this)"><span class="material-icons-round">dashboard</span><span>Dashboard</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-valve',this)"><span class="material-icons-round">water</span><span>Valve</span></div>
+    <div class="nav-item active" onclick="switchFarmerTab('screen-farmer-crop',this)"><span class="material-icons-round">grass</span><span>Crop</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-weather',this)"><span class="material-icons-round">cloud</span><span>Weather</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-report',this)"><span class="material-icons-round">report</span><span>Report</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER WEATHER                               -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-weather" class="screen">
+  <div class="topbar">
+    <div style="flex:1"><div class="topbar-title">Weather</div><div class="topbar-subtitle" id="weather-location-label">Loading...</div></div>
+    <span class="material-icons-round topbar-icon" onclick="loadWeather()">refresh</span>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content" id="weather-content">
+    <div class="loading"><div class="spinner"></div><span>Fetching weather...</span></div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-dashboard',this)"><span class="material-icons-round">dashboard</span><span>Dashboard</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-valve',this)"><span class="material-icons-round">water</span><span>Valve</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-crop',this)"><span class="material-icons-round">grass</span><span>Crop</span></div>
+    <div class="nav-item active" onclick="switchFarmerTab('screen-farmer-weather',this)"><span class="material-icons-round">cloud</span><span>Weather</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-report',this)"><span class="material-icons-round">report</span><span>Report</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER REPORT ISSUE                          -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-report" class="screen">
+  <div class="topbar">
+    <div style="flex:1"><div class="topbar-title">Report Issue</div><div class="topbar-subtitle">Send to Admin</div></div>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">Submit a Report</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Issue Title</label><input type="text" class="input-field" id="report-title" placeholder="e.g. Valve 1 not responding"></div>
+        <div class="input-group"><label class="input-label">Description</label><textarea class="input-field" id="report-desc" rows="4" placeholder="Describe the issue in detail..." style="resize:none"></textarea></div>
+        <button class="btn btn-primary" onclick="submitReport()">
+          <span class="material-icons-round">send</span> SUBMIT REPORT
+        </button>
+        <div id="report-status" class="status-msg" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-dashboard',this)"><span class="material-icons-round">dashboard</span><span>Dashboard</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-valve',this)"><span class="material-icons-round">water</span><span>Valve</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-crop',this)"><span class="material-icons-round">grass</span><span>Crop</span></div>
+    <div class="nav-item" onclick="switchFarmerTab('screen-farmer-weather',this)"><span class="material-icons-round">cloud</span><span>Weather</span></div>
+    <div class="nav-item active" onclick="switchFarmerTab('screen-farmer-report',this)"><span class="material-icons-round">report</span><span>Report</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER PROFILE                               -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-profile" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showFarmerScreen('screen-farmer-dashboard')">arrow_back</span>
+    <div><div class="topbar-title">My Profile</div></div>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="text-align:center">
+      <div class="profile-avatar" id="profile-avatar">F</div>
+      <div class="profile-name" id="profile-name">Farmer</div>
+      <div class="profile-role">🌾 Rice Farmer</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:6px" id="profile-location"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Update Contact</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Phone Number</label><input type="tel" class="input-field" id="profile-phone" placeholder="+63 9XX XXX XXXX"></div>
+        <div class="input-group"><label class="input-label">Location</label><input type="text" class="input-field" id="profile-location-input" placeholder="Farm location"></div>
+        <button class="btn btn-primary" onclick="updateProfile()">
+          <span class="material-icons-round">save</span> UPDATE PROFILE
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Change Password</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">New Password</label><input type="password" class="input-field" id="new-password" placeholder="Minimum 6 characters"></div>
+        <div class="input-group"><label class="input-label">Confirm Password</label><input type="password" class="input-field" id="confirm-password" placeholder="Re-enter password"></div>
+        <button class="btn btn-outline" onclick="changePassword()">
+          <span class="material-icons-round">lock</span> CHANGE PASSWORD
+        </button>
+      </div>
+    </div>
+    <div id="profile-status" class="status-msg" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- FARMER NOTIFICATIONS                         -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-farmer-notifications" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showFarmerScreen('screen-farmer-dashboard')">arrow_back</span>
+    <div><div class="topbar-title">Notifications</div></div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" id="notif-list">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN DASHBOARD                              -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-dashboard" class="screen">
+  <div class="topbar">
+    <div style="flex:1"><div class="topbar-title">Admin Dashboard</div><div class="topbar-subtitle">RiceSense Management</div></div>
+    <span class="material-icons-round topbar-icon" onclick="showAdminScreen('screen-admin-notifications')">notifications</span>
+    <span class="material-icons-round topbar-icon" onclick="showAdminScreen('screen-admin-profile')">account_circle</span>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card" id="admin-stats-card">
+      <div class="card-title">System Overview</div>
+      <div class="stat-grid" id="admin-stats">
+        <div class="stat-card"><div class="stat-value" id="stat-devices">-</div><div class="stat-label">Devices</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-farmers">-</div><div class="stat-label">Farmers</div></div>
+        <div class="stat-card"><div class="stat-value" id="stat-reports">-</div><div class="stat-label">Reports</div></div>
+      </div>
+    </div>
+    <div class="section-label">Management</div>
+    <div class="menu-item" onclick="showAdminScreen('screen-admin-farmers')">
+      <div class="menu-item-icon"><span class="material-icons-round">group</span></div>
+      <div class="menu-item-text"><div class="menu-item-title">Farmer Accounts</div><div class="menu-item-sub">Manage farmer users</div></div>
+      <span class="material-icons-round" style="color:var(--text-muted)">chevron_right</span>
+    </div>
+    <div class="menu-item" onclick="showAdminScreen('screen-admin-devices')">
+      <div class="menu-item-icon"><span class="material-icons-round">devices</span></div>
+      <div class="menu-item-text"><div class="menu-item-title">IoT Devices</div><div class="menu-item-sub">Register & manage devices</div></div>
+      <span class="material-icons-round" style="color:var(--text-muted)">chevron_right</span>
+    </div>
+    <div class="menu-item" onclick="showAdminScreen('screen-admin-reports')">
+      <div class="menu-item-icon"><span class="material-icons-round">report_problem</span></div>
+      <div class="menu-item-text"><div class="menu-item-title">Issue Reports</div><div class="menu-item-sub">Review farmer reports</div></div>
+      <span class="material-icons-round" style="color:var(--text-muted)">chevron_right</span>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN FARMERS                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-farmers" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showAdminScreen('screen-admin-dashboard')">arrow_back</span>
+    <div style="flex:1"><div class="topbar-title">Farmer Accounts</div></div>
+    <span class="material-icons-round topbar-icon" onclick="showAdminScreen('screen-admin-add-farmer')">person_add</span>
+    <span class="material-icons-round topbar-icon" onclick="loadFarmers()">refresh</span>
+  </div>
+  <div class="scroll-content" id="farmers-list">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN ADD FARMER                             -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-add-farmer" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showAdminScreen('screen-admin-farmers')">arrow_back</span>
+    <div><div class="topbar-title" id="add-farmer-title">Add Farmer</div></div>
+  </div>
+  <div class="scroll-content">
+    <div class="card">
+      <div class="card-title">Farmer Details</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Full Name</label><input type="text" class="input-field" id="af-name" placeholder="Juan dela Cruz"></div>
+        <div class="input-group"><label class="input-label">Email Address</label><input type="email" class="input-field" id="af-email" placeholder="farmer@example.com"></div>
+        <div class="input-group"><label class="input-label">Phone Number</label><input type="tel" class="input-field" id="af-phone" placeholder="+63 9XX XXX XXXX"></div>
+        <div class="input-group"><label class="input-label">Farm Location</label><input type="text" class="input-field" id="af-location" placeholder="e.g. Iloilo City"></div>
+        <div class="input-group" id="af-password-group"><label class="input-label">Password</label><input type="password" class="input-field" id="af-password" placeholder="Minimum 6 characters"></div>
+        <input type="hidden" id="af-uid">
+        <button class="btn btn-primary" id="af-submit-btn" onclick="submitFarmer()">
+          <span class="material-icons-round">person_add</span> CREATE FARMER ACCOUNT
+        </button>
+        <button class="btn btn-danger" id="af-delete-btn" onclick="deleteFarmer()" style="display:none">
+          <span class="material-icons-round">delete</span> DELETE FARMER
+        </button>
+        <div id="af-status" class="status-msg" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN DEVICES                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-devices" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showAdminScreen('screen-admin-dashboard')">arrow_back</span>
+    <div style="flex:1"><div class="topbar-title">IoT Devices</div></div>
+    <span class="material-icons-round topbar-icon" onclick="openAddDeviceModal()">add</span>
+  </div>
+  <div class="scroll-content" id="devices-list">
+    <div class="loading"><div class="spinner"></div></div>
+  </div>
+  <!-- Add/Edit Device Modal -->
+  <div class="modal-overlay" id="add-device-modal">
+    <div class="modal-box">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="device-modal-title">Register New Device</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group">
+          <label class="input-label">Device ID</label>
+          <input type="text" class="input-field" id="dev-id" placeholder="e.g. device-001" data-original-id="">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Device Name</label>
+          <input type="text" class="input-field" id="dev-name" placeholder="e.g. Field A Sensor">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Assigned Farmer UID</label>
+          <input type="text" class="input-field" id="dev-farmer-uid" placeholder="Paste farmer UID (optional)">
+        </div>
+        <div id="dev-status" class="status-msg" style="display:none"></div>
+        <button class="btn btn-primary" id="device-submit-btn" onclick="addDevice()">
+          <span class="material-icons-round">add_circle</span> REGISTER DEVICE
+        </button>
+        <button class="btn btn-danger" id="device-delete-btn" onclick="if(confirm('Delete this device?')) deleteDevice(document.getElementById('dev-id').value, document.getElementById('dev-name').value)" style="display:none">
+          <span class="material-icons-round">delete</span> DELETE DEVICE
+        </button>
+        <button class="btn btn-outline" onclick="closeAddDeviceModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN REPORTS                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-reports" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showAdminScreen('screen-admin-dashboard')">arrow_back</span>
+    <div style="flex:1"><div class="topbar-title">Issue Reports</div></div>
+    <span class="material-icons-round topbar-icon" onclick="loadReports()">refresh</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card" id="reports-list">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN PROFILE                                -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-profile" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showAdminScreen('screen-admin-dashboard')">arrow_back</span>
+    <div><div class="topbar-title">Admin Profile</div></div>
+    <span class="material-icons-round topbar-icon" onclick="doLogout()">logout</span>
+  </div>
+  <div class="scroll-content">
+    <div class="card" style="text-align:center">
+      <div class="profile-avatar" id="admin-avatar">A</div>
+      <div class="profile-name" id="admin-name">Admin</div>
+      <div class="profile-role">🛡️ System Administrator</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Update Contact</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">Phone Number</label><input type="tel" class="input-field" id="admin-phone" placeholder="+63 9XX XXX XXXX"></div>
+        <button class="btn btn-primary" onclick="updateAdminProfile()">
+          <span class="material-icons-round">save</span> UPDATE PROFILE
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Change Password</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="input-group"><label class="input-label">New Password</label><input type="password" class="input-field" id="admin-new-password" placeholder="Minimum 6 characters"></div>
+        <div class="input-group"><label class="input-label">Confirm Password</label><input type="password" class="input-field" id="admin-confirm-password" placeholder="Re-enter password"></div>
+        <button class="btn btn-outline" onclick="changeAdminPassword()">
+          <span class="material-icons-round">lock</span> CHANGE PASSWORD
+        </button>
+      </div>
+    </div>
+    <div id="admin-profile-status" class="status-msg" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN NOTIFICATIONS                          -->
+<!-- ════════════════════════════════════════════ -->
+<div id="screen-admin-notifications" class="screen">
+  <div class="topbar">
+    <span class="material-icons-round back-btn" onclick="showAdminScreen('screen-admin-dashboard')">arrow_back</span>
+    <div><div class="topbar-title">Notifications</div></div>
+  </div>
+  <div class="scroll-content">
+    <div class="card" id="admin-notif-list">
+      <div class="loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════ -->
+<!-- FIREBASE + APP JAVASCRIPT                                    -->
+<!-- ════════════════════════════════════════════════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updatePassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, query, where, orderBy, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── FIREBASE CONFIG ──────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDE53bb0qJJa2GGjdC2hoBTaxJ98kmwyEM",
+  authDomain: "irrigation-23d37.firebaseapp.com",
+  databaseURL: "https://irrigation-23d37-default-rtdb.firebaseio.com",
+  projectId: "irrigation-23d37",
+  storageBucket: "irrigation-23d37.appspot.com",
+  messagingSenderId: "914417345508",
+  appId: "1:914417345508:web:47ec9053d677f0f04e9df1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rtdb = getDatabase(app);
+
+// ── SESSION ──────────────────────────────────────────────────
+let currentUser = null;
+let currentUserData = null;
+let sensorUnsubscribe = null;
+let selectedValve = 1;
+let editingFarmerUid = null;
+
+// ── SCREEN NAVIGATION ────────────────────────────────────────
+window.showScreen = (id) => {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+};
+
+window.showFarmerScreen = (id) => {
+  showScreen(id);
+  updateFarmerNav(id);
+};
+
+window.showAdminScreen = (id) => {
+  showScreen(id);
+  if (id === 'screen-admin-farmers') loadFarmers();
+  if (id === 'screen-admin-devices') loadDevices();
+  if (id === 'screen-admin-reports') loadReports();
+  if (id === 'screen-admin-notifications') loadAdminNotifications();
+  if (id === 'screen-admin-dashboard') loadAdminStats();
+};
+
+window.switchFarmerTab = (id, el) => {
+  showScreen(id);
+  updateFarmerNav(id);
+  if (id === 'screen-farmer-dashboard') loadDashboard();
+  if (id === 'screen-farmer-valve') { loadValveStates(); loadIrrigationAdvice(); }
+  if (id === 'screen-farmer-crop') loadCropMonitor();
+  if (id === 'screen-farmer-weather') loadWeather();
+  if (id === 'screen-farmer-notifications') loadNotifications();
+};
+
+function updateFarmerNav(activeId) {
+  const navMap = {
+    'screen-farmer-dashboard': 0,
+    'screen-farmer-valve': 1,
+    'screen-farmer-crop': 2,
+    'screen-farmer-weather': 3,
+    'screen-farmer-report': 4,
+  };
+  document.querySelectorAll('.bottom-nav .nav-item').forEach((item, i) => {
+    item.classList.toggle('active', i === navMap[activeId]);
+  });
+}
+
+// ── TOAST ────────────────────────────────────────────────────
+window.showToast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+function showStatus(id, msg, type='error') {
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  el.className = `status-msg status-${type}`;
+  el.textContent = msg;
+}
+
+// ── AUTH STATE ───────────────────────────────────────────────
+let authInitialized = false;
+
+function initAuthListener() {
+  if (authInitialized) return;
+  authInitialized = true;
+
+  onAuthStateChanged(auth, async (user) => {
+    try {
+      if (user) {
+        currentUser = user;
+        console.log('✓ User logged in:', user.email);
+        
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        if (snap.exists()) {
+          currentUserData = snap.data();
+          console.log('✓ User data loaded:', currentUserData.name);
+          
+          if (currentUserData.role === 'admin') {
+            showScreen('screen-admin-dashboard');
+            loadAdminStats();
+            populateAdminProfile();
+          } else {
+            showScreen('screen-farmer-dashboard');
+            updateFarmerNav('screen-farmer-dashboard');
+            loadDashboard();
+            populateFarmerProfile();
+          }
+        } else {
+          console.warn('⚠️ User exists but no profile data found');
+          showToast('User profile not found. Please contact admin.');
+          await signOut(auth);
+          showScreen('screen-login');
+        }
+      } else {
+        currentUser = null;
+        currentUserData = null;
+        showScreen('screen-login');
+      }
+    } catch (error) {
+      console.error('❌ Auth listener error:', error.message);
+      showScreen('screen-login');
+      showToast('Error: ' + error.message);
+    }
+  });
+}
+
+// Initialize auth when DOM is ready
+document.addEventListener('DOMContentLoaded', initAuthListener);
+
+// ── LOGIN ────────────────────────────────────────────────────
+window.doLogin = async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  if (!email || !password) { showStatus('login-status','Please fill in all fields'); return; }
+  
+  if (!authInitialized) {
+    showStatus('login-status','⚠️ System initializing... please wait');
+    return;
+  }
+  
+  showStatus('login-status','Signing in...','info');
+  try {
+    console.log('📧 Attempting login for:', email);
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    console.log('✓ Login successful:', result.user.email);
+    // Auth state listener will handle screen navigation
+  } catch(e) {
+    console.error('❌ Login error:', e.code, e.message);
+    let errorMsg = 'Invalid email or password.';
+    if (e.code === 'auth/user-not-found') errorMsg = 'User account not found.';
+    if (e.code === 'auth/wrong-password') errorMsg = 'Incorrect password.';
+    if (e.code === 'auth/invalid-email') errorMsg = 'Invalid email format.';
+    if (e.code === 'auth/user-disabled') errorMsg = 'Account has been disabled.';
+    if (e.code === 'auth/too-many-requests') errorMsg = 'Too many login attempts. Try again later.';
+    showStatus('login-status', errorMsg);
+  }
+};
+
+// ── SIGNUP ───────────────────────────────────────────────────
+window.doSignup = async () => {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const location = document.getElementById('signup-location').value.trim();
+  const password = document.getElementById('signup-password').value.trim();
+  const confirm = document.getElementById('signup-confirm').value.trim();
+  if (!name || !email || !password) { showStatus('signup-status','Please fill in required fields'); return; }
+  if (password !== confirm) { showStatus('signup-status','Passwords do not match'); return; }
+  if (password.length < 6) { showStatus('signup-status','Password must be at least 6 characters'); return; }
+  showStatus('signup-status','Creating account...','info');
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      uid: cred.user.uid, name, email, phone, location,
+      role: 'farmer', soil_type: 'Clay Loam',
+      plantation_date: '', device_id: '', created_at: serverTimestamp()
+    });
+    showToast('Account created! Welcome, ' + name);
+  } catch(e) {
+    showStatus('signup-status', e.message.replace('Firebase: ',''));
+  }
+};
+
+// ── LOGOUT ───────────────────────────────────────────────────
+window.doLogout = async () => {
+  if (sensorUnsubscribe) sensorUnsubscribe();
+  await signOut(auth);
+  showScreen('screen-login');
+  showToast('Logged out successfully');
+};
+
+// ── FARMER DASHBOARD ─────────────────────────────────────────
+window.loadDashboard = async () => {
+  if (!currentUserData) return;
+  document.getElementById('dash-greeting').textContent = 'Hello, ' + (currentUserData.name || 'Farmer');
+  document.getElementById('dash-location').textContent = currentUserData.location || 'RiceSense';
+  const content = document.getElementById('dash-content');
+  content.innerHTML = '<div class="loading"><div class="spinner"></div><span>Loading sensors...</span></div>';
+  const deviceId = currentUserData.device_id;
+  if (!deviceId) {
+    content.innerHTML = `<div class="card"><div style="text-align:center;padding:20px;color:var(--text-muted)"><span style="font-size:48px">📡</span><br><br>No device assigned.<br>Contact your admin.</div></div>`;
+    renderCropQuickCard(content);
+    return;
+  }
+  // Listen to realtime sensor data
+  const sensorRef = ref(rtdb, `devices/${deviceId}/sensors`);
+  if (sensorUnsubscribe) sensorUnsubscribe();
+  sensorUnsubscribe = onValue(sensorRef, (snap) => {
+    const data = snap.val() || {};
+    renderDashboard(content, data, deviceId);
+  });
+};
+
+function renderDashboard(container, sensors, deviceId) {
+  const battery = sensors.battery ?? 0;
+  const battColor = battery >= 75 ? '#2E7D32' : battery >= 40 ? '#F9A825' : '#C62828';
+  const battIcon = battery >= 75 ? '🔋' : battery >= 40 ? '🪫' : '🔴';
+  const moisture = sensors.soil_moisture ?? 0;
+  const waterLevel = sensors.water_level ?? 0;
+  const cropStatus = getCropStatus();
+  
+  // Determine alert status
+  let alertHTML = '';
+  let moistureColor = '#2E7D32';
+  let moistureIcon = '✓';
+  let waterColor = '#2E7D32';
+  let waterIcon = '✓';
+  
+  // Moisture alerts
+  if (moisture < 20) {
+    alertHTML += `<div style="background:#FFEBEE;border-left:4px solid #C62828;padding:12px;border-radius:8px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">🚨</span>
+        <div>
+          <div style="font-weight:700;color:#C62828">CRITICAL: Soil Moisture Critical</div>
+          <div style="font-size:12px;color:#8B0000">Moisture is ${moisture}% (Critical below 20%)</div>
+          <div style="font-size:11px;color:#666;margin-top:4px">Check water tank immediately!</div>
+        </div>
+      </div>
+    </div>`;
+    moistureColor = '#C62828';
+    moistureIcon = '🚨';
+  } else if (moisture < 40) {
+    alertHTML += `<div style="background:#FFF3CD;border-left:4px solid #F9A825;padding:12px;border-radius:8px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">⚠️</span>
+        <div>
+          <div style="font-weight:700;color:#F57F17">WARNING: Low Soil Moisture</div>
+          <div style="font-size:12px;color:#B8860B">Moisture is ${moisture}% (Warning below 40%)</div>
+          <div style="font-size:11px;color:#666;margin-top:4px">Consider starting irrigation soon</div>
+        </div>
+      </div>
+    </div>`;
+    moistureColor = '#F9A825';
+    moistureIcon = '⚠️';
+  }
+  
+  // Water level alerts
+  if (waterLevel < 10) {
+    alertHTML += `<div style="background:#FFEBEE;border-left:4px solid #C62828;padding:12px;border-radius:8px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">🚨</span>
+        <div>
+          <div style="font-weight:700;color:#C62828">CRITICAL: Water Level Critical</div>
+          <div style="font-size:12px;color:#8B0000">Water level is ${waterLevel}cm (Critical below 10cm)</div>
+          <div style="font-size:11px;color:#666;margin-top:4px">Refill water tank immediately!</div>
+        </div>
+      </div>
+    </div>`;
+    waterColor = '#C62828';
+    waterIcon = '🚨';
+  } else if (waterLevel < 30) {
+    alertHTML += `<div style="background:#FFF3CD;border-left:4px solid #F9A825;padding:12px;border-radius:8px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">⚠️</span>
+        <div>
+          <div style="font-weight:700;color:#F57F17">WARNING: Low Water Level</div>
+          <div style="font-size:12px;color:#B8860B">Water level is ${waterLevel}cm (Warning below 30cm)</div>
+          <div style="font-size:11px;color:#666;margin-top:4px">Refill water tank soon</div>
+        </div>
+      </div>
+    </div>`;
+    waterColor = '#F9A825';
+    waterIcon = '⚠️';
+  }
+  
+  container.innerHTML = alertHTML + `
+    <div class="card">
+      <div class="card-title">Live Sensor Data <span style="float:right;font-size:11px;color:var(--green-light)">● LIVE</span></div>
+      <div class="sensor-grid">
+        <div class="sensor-item">
+          <div class="sensor-icon">${moistureIcon}</div>
+          <div class="sensor-value" style="color:${moistureColor}">${moisture}%</div>
+          <div class="sensor-label">Soil Moisture</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${moisture}%;background:${moistureColor}"></div></div>
+        </div>
+        <div class="sensor-item">
+          <div class="sensor-icon">🌫️</div>
+          <div class="sensor-value">${sensors.humidity ?? '--'}%</div>
+          <div class="sensor-label">Humidity</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${sensors.humidity ?? 0}%;background:#1565C0"></div></div>
+        </div>
+        <div class="sensor-item">
+          <div class="sensor-icon">${waterIcon}</div>
+          <div class="sensor-value" style="color:${waterColor}">${waterLevel} cm</div>
+          <div class="sensor-label">Water Level</div>
+        </div>
+        <div class="sensor-item">
+          <div class="sensor-icon">🔄</div>
+          <div class="sensor-value">${sensors.water_flow ?? '--'} L/m</div>
+          <div class="sensor-label">Water Flow</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Battery Status</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:36px">${battIcon}</span>
+        <div style="flex:1">
+          <div style="font-size:28px;font-weight:800;color:${battColor}">${battery}%</div>
+          <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${battery}%;background:${battColor}"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Crop Summary</div>
+      ${cropStatus ? `
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:32px;font-weight:800;color:var(--green-primary)">${cropStatus.age} <span style="font-size:16px;font-weight:500">days</span></div>
+            <div style="font-size:13px;color:var(--text-muted)">${cropStatus.stage}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:20px;font-weight:700;color:var(--yellow-gold)">${cropStatus.waterReq} mm/day</div>
+            <div style="font-size:12px;color:var(--text-muted)">Water requirement</div>
+          </div>
+        </div>
+      ` : `<div style="color:var(--text-muted);font-size:14px">Set plantation date in Crop Monitor</div>`}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-primary" onclick="switchFarmerTab('screen-farmer-valve',null)"><span class="material-icons-round">water</span> Irrigate</button>
+      <button class="btn btn-accent" onclick="switchFarmerTab('screen-farmer-weather',null)"><span class="material-icons-round">cloud</span> Weather</button>
+    </div>
+  `;
+}
+
+// ── VALVE CONTROL ────────────────────────────────────────────
+window.loadValveStates = async () => {
+  if (!currentUserData?.device_id) return;
+  const deviceId = currentUserData.device_id;
+  const v1Ref = ref(rtdb, `devices/${deviceId}/valves/valve1`);
+  const v2Ref = ref(rtdb, `devices/${deviceId}/valves/valve2`);
+  const [s1, s2] = await Promise.all([get(v1Ref), get(v2Ref)]);
+  const v1 = s1.val()?.state ?? false;
+  const v2 = s2.val()?.state ?? false;
+  document.getElementById('valve-rows').innerHTML = `
+    <div class="valve-row">
+      <div class="valve-info">
+        <div class="valve-name">💧 Valve 1 — Field A</div>
+        <div class="valve-status ${v1 ? 'open' : 'closed'}">${v1 ? '🟢 OPEN' : '🔴 CLOSED'}</div>
+      </div>
+      <div class="valve-btns">
+        <button class="btn btn-primary btn-sm" onclick="setValve(1,true)">Open</button>
+        <button class="btn btn-danger btn-sm" onclick="setValve(1,false)">Close</button>
+      </div>
+    </div>
+    <div class="valve-row">
+      <div class="valve-info">
+        <div class="valve-name">💧 Valve 2 — Field B</div>
+        <div class="valve-status ${v2 ? 'open' : 'closed'}">${v2 ? '🟢 OPEN' : '🔴 CLOSED'}</div>
+      </div>
+      <div class="valve-btns">
+        <button class="btn btn-primary btn-sm" onclick="setValve(2,true)">Open</button>
+        <button class="btn btn-danger btn-sm" onclick="setValve(2,false)">Close</button>
+      </div>
+    </div>
+  `;
+};
+
+window.setValve = async (valve, state) => {
+  if (!currentUserData?.device_id) { showToast('No device assigned'); return; }
+  const deviceId = currentUserData.device_id;
+  await set(ref(rtdb, `devices/${deviceId}/valves/valve${valve}`), {
+    state, commanded_at: new Date().toISOString()
+  });
+  showToast(`Valve ${valve} ${state ? 'opened' : 'closed'}`);
+  loadValveStates();
+};
+
+window.selectValveChip = (valve, el) => {
+  selectedValve = valve;
+  document.querySelectorAll('#valve-chips .chip').forEach(c => {
+    c.className = 'chip unselected';
+  });
+  el.className = 'chip selected';
+};
+
+window.saveSchedule = async () => {
+  if (!currentUserData?.device_id) { showToast('No device assigned'); return; }
+  const time = document.getElementById('sched-time').value;
+  const duration = document.getElementById('sched-duration').value;
+  await set(ref(rtdb, `devices/${currentUserData.device_id}/schedule`), {
+    active: true, valve: selectedValve, time,
+    duration_minutes: parseInt(duration),
+    soil_type: currentUserData.soil_type || 'Clay Loam'
+  });
+  showToast('Schedule saved!');
+};
+
+window.loadIrrigationAdvice = async () => {
+  const loc = currentUserData?.location || 'Iloilo City';
+  const el = document.getElementById('irrigation-advice');
+  if (!el) return;
+  try {
+    const geo = await fetchGeo(loc);
+    const params = new URLSearchParams({ latitude: geo.lat, longitude: geo.lon, hourly: 'precipitation,precipitation_probability', forecast_days: 1, timezone: 'auto' });
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+    const data = await res.json();
+    const totalRain = (data.hourly.precipitation || []).reduce((a, b) => a + (b || 0), 0);
+    const maxProb = Math.max(...(data.hourly.precipitation_probability || [0]));
+    let advice, cls;
+    if (totalRain >= 10) { advice = `Heavy rain expected (${totalRain.toFixed(1)}mm). Skip irrigation.`; cls = 'irrigate-no'; }
+    else if (maxProb >= 70) { advice = `High rain chance (${maxProb}%). Consider skipping.`; cls = 'irrigate-no'; }
+    else if (totalRain >= 5) { advice = `Light rain expected (${totalRain.toFixed(1)}mm). Supplement irrigation.`; cls = 'irrigate-yes'; }
+    else { advice = 'No significant rain. Irrigation recommended.'; cls = 'irrigate-yes'; }
+    el.className = `irrigate-banner ${cls}`;
+    el.innerHTML = `<span class="material-icons-round">${cls === 'irrigate-yes' ? 'water_drop' : 'water_drop_outlined'}</span><span style="font-size:13px;font-weight:600">${advice}</span>`;
+  } catch(e) { el.innerHTML = `<span class="material-icons-round">info</span><span style="font-size:13px">Could not load weather advice.</span>`; }
+};
+
+// ── CROP MONITOR ─────────────────────────────────────────────
+const RICE_STAGES = [
+  { name: 'Pre-Planting', start: -14, end: 0, water: 8.0, color: '#8B6914' },
+  { name: 'Germination', start: 1, end: 10, water: 4.0, color: '#AEDE7A' },
+  { name: 'Vegetative (Tillering)', start: 11, end: 40, water: 6.0, color: '#5DBE2A' },
+  { name: 'Vegetative (Stem Elongation)', start: 41, end: 55, water: 7.0, color: '#3CA218' },
+  { name: 'Reproductive (Panicle Initiation)', start: 56, end: 70, water: 8.5, color: '#F5C842', critical: true },
+  { name: 'Reproductive (Heading/Flowering)', start: 71, end: 85, water: 9.0, color: '#F5A623', critical: true },
+  { name: 'Ripening (Grain Filling)', start: 86, end: 100, water: 5.0, color: '#E8831A' },
+  { name: 'Ripening (Maturation)', start: 101, end: 110, water: 2.0, color: '#D4A017' },
+  { name: '🌾 Ready for Harvest!', start: 111, end: 999, water: 0, color: '#F9A825' },
+];
+
+const SOIL_MODIFIERS = { 'Clay': 0.85, 'Clay Loam': 0.90, 'Loam': 1.00, 'Sandy Loam': 1.15, 'Sandy': 1.30, 'Silty Loam': 0.95, 'Silty Clay': 0.88 };
+
+function getCropStatus() {
+  if (!currentUserData?.plantation_date) return null;
+  const planted = new Date(currentUserData.plantation_date);
+  const today = new Date();
+  const age = Math.floor((today - planted) / 86400000);
+  const stage = RICE_STAGES.find(s => age >= s.start && age <= s.end) || RICE_STAGES[RICE_STAGES.length - 1];
+  const mod = SOIL_MODIFIERS[currentUserData.soil_type || 'Clay Loam'] || 1.0;
+  const waterReq = (stage.water * mod).toFixed(1);
+  const harvestDays = Math.max(0, 115 - age);
+  return { age, stage: stage.name, color: stage.color, waterReq, harvestDays, critical: stage.critical, harvest: age >= 111 };
+}
+
+window.loadCropMonitor = () => {
+  if (currentUserData?.plantation_date) {
+    document.getElementById('plant-date').value = currentUserData.plantation_date;
+  }
+  if (currentUserData?.soil_type) {
+    document.getElementById('soil-type').value = currentUserData.soil_type;
+  }
+  renderCropCards();
+};
+
+function renderCropCards() {
+  const container = document.getElementById('crop-info-cards');
+  const status = getCropStatus();
+  if (!status) { container.innerHTML = ''; return; }
+  const harvestDate = new Date();
+  harvestDate.setDate(harvestDate.getDate() + status.harvestDays);
+  const progress = Math.min(100, Math.round((status.age / 115) * 100));
+  container.innerHTML = `
+    ${status.harvest ? `<div class="harvest-banner"><div style="font-size:32px">🌾</div><div style="font-size:18px;font-weight:800;margin-top:8px">Ready for Harvest!</div><div style="font-size:14px;opacity:0.9">Your rice crop is mature. Time to harvest!</div></div>` : ''}
+    <div class="card">
+      <div class="card-title">Crop Age</div>
+      <div style="text-align:center">
+        <div style="font-size:64px;font-weight:800;color:var(--green-primary)">${status.age}</div>
+        <div style="font-size:16px;color:var(--text-muted)">days old</div>
+        <div style="margin-top:14px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px">
+            <span>Planted</span><span>${status.harvestDays} days to harvest</span>
+          </div>
+          <div class="progress-bar" style="height:10px"><div class="progress-fill" style="width:${progress}%;background:var(--green-primary)"></div></div>
+        </div>
+        <div style="margin-top:10px;font-size:13px;color:var(--text-muted)">Est. harvest: ${harvestDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Growth Stage</div>
+      <div class="stage-badge" style="background:${status.color}">${status.stage}</div>
+      ${status.critical ? `<div class="status-msg status-error" style="margin-top:10px">⚠️ Critical stage — maintain water levels carefully!</div>` : ''}
+    </div>
+    <div class="card">
+      <div class="card-title">Water Requirement</div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <span style="font-size:40px">💧</span>
+        <div>
+          <div style="font-size:32px;font-weight:800;color:var(--green-primary)">${status.waterReq} <span style="font-size:16px">mm/day</span></div>
+          <div style="font-size:13px;color:var(--text-muted)">${currentUserData?.soil_type || 'Clay Loam'} soil adjusted</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+window.saveCropSettings = async () => {
+  const plantDate = document.getElementById('plant-date').value;
+  const soilType = document.getElementById('soil-type').value;
+  if (!plantDate) { showToast('Please select a plantation date'); return; }
+  try {
+    await updateDoc(doc(db, 'users', currentUser.uid), { plantation_date: plantDate, soil_type: soilType });
+    currentUserData.plantation_date = plantDate;
+    currentUserData.soil_type = soilType;
+    renderCropCards();
+    showToast('Crop settings saved!');
+    // Check if harvest ready, send notification
+    const status = getCropStatus();
+    if (status?.harvest) {
+      await addDoc(collection(db, 'notifications'), {
+        uid: currentUser.uid, title: '🌾 Harvest Ready!',
+        body: 'Your rice crop has reached maturity. Time to harvest!',
+        type: 'harvest', read: false, created_at: serverTimestamp()
+      });
+    }
+  } catch(e) { showToast('Error saving: ' + e.message); }
+};
+
+// ── WEATHER ──────────────────────────────────────────────────
+const WMO = { 0:['Clear Sky','☀️'], 1:['Mainly Clear','🌤️'], 2:['Partly Cloudy','⛅'], 3:['Overcast','☁️'], 45:['Foggy','🌫️'], 48:['Rime Fog','🌫️'], 51:['Light Drizzle','🌦️'], 53:['Drizzle','🌦️'], 55:['Dense Drizzle','🌧️'], 61:['Slight Rain','🌧️'], 63:['Moderate Rain','🌧️'], 65:['Heavy Rain','🌧️'], 80:['Rain Showers','🌦️'], 81:['Rain Showers','🌧️'], 82:['Violent Rain','⛈️'], 95:['Thunderstorm','⛈️'], 96:['Thunderstorm','⛈️'] };
+
+async function fetchGeo(location) {
+  const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`);
+  const data = await res.json();
+  if (!data.results?.length) throw new Error('Location not found');
+  return { lat: data.results[0].latitude, lon: data.results[0].longitude, city: data.results[0].name };
+}
+
+window.loadWeather = async () => {
+  const loc = currentUserData?.location || 'Iloilo City';
+  document.getElementById('weather-location-label').textContent = loc;
+  const container = document.getElementById('weather-content');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div><span>Fetching weather...</span></div>';
+  try {
+    const geo = await fetchGeo(loc);
+    document.getElementById('weather-location-label').textContent = geo.city;
+    const params = new URLSearchParams({
+      latitude: geo.lat, longitude: geo.lon, timezone: 'auto',
+      current: 'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation,weather_code',
+      daily: 'temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,weather_code',
+      forecast_days: 7
+    });
+    const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+    const data = await res.json();
+    const curr = data.current;
+    const wmo = WMO[curr.weather_code] || ['Unknown','🌤️'];
+    // Irrigation advice
+    const totalRain = (data.daily.precipitation_sum || []).slice(0,2).reduce((a,b)=>a+(b||0),0);
+    const maxProb = Math.max(...(data.daily.precipitation_probability_max || [0]).slice(0,2));
+    let advice, advCls;
+    if (totalRain >= 10) { advice = `Heavy rain expected (${totalRain.toFixed(1)}mm). Skip irrigation.`; advCls = 'irrigate-no'; }
+    else if (maxProb >= 70) { advice = `High rain chance (${maxProb}%). Consider skipping.`; advCls = 'irrigate-no'; }
+    else { advice = 'No significant rain. Irrigation recommended.'; advCls = 'irrigate-yes'; }
+    // Build forecast items
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const forecastHTML = (data.daily.time || []).map((t, i) => {
+      const d = new Date(t);
+      const w = WMO[data.daily.weather_code[i]] || ['','🌤️'];
+      return `<div class="forecast-item">
+        <div class="forecast-day">${days[d.getDay()]}</div>
+        <div class="forecast-emoji">${w[1]}</div>
+        <div class="forecast-temp">${Math.round(data.daily.temperature_2m_max[i])}°</div>
+        <div class="forecast-rain">💧 ${data.daily.precipitation_probability_max[i] || 0}%</div>
+      </div>`;
+    }).join('');
+    container.innerHTML = `
+      <div class="card">
+        <div class="weather-main">
+          <div class="weather-emoji">${wmo[1]}</div>
+          <div>
+            <div class="weather-temp">${Math.round(curr.temperature_2m)}°C</div>
+            <div class="weather-desc">${wmo[0]}</div>
+          </div>
+        </div>
+        <div class="weather-details">
+          <div class="weather-detail-item"><div class="weather-detail-label">Feels Like</div><div class="weather-detail-value">${Math.round(curr.apparent_temperature)}°C</div></div>
+          <div class="weather-detail-item"><div class="weather-detail-label">Humidity</div><div class="weather-detail-value">${curr.relative_humidity_2m}%</div></div>
+          <div class="weather-detail-item"><div class="weather-detail-label">Wind</div><div class="weather-detail-value">${curr.wind_speed_10m} km/h</div></div>
+          <div class="weather-detail-item"><div class="weather-detail-label">Rain (1h)</div><div class="weather-detail-value">${curr.precipitation} mm</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Irrigation Advice</div>
+        <div class="irrigate-banner ${advCls}">
+          <span class="material-icons-round">water_drop</span>
+          <span style="font-size:14px;font-weight:600">${advice}</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">7-Day Forecast</div>
+        <div class="forecast-scroll">${forecastHTML}</div>
+      </div>
+    `;
+  } catch(e) {
+    container.innerHTML = `<div class="card"><div class="status-msg status-error">Could not load weather: ${e.message}</div></div>`;
+  }
+};
+
+// ── REPORT ISSUE ─────────────────────────────────────────────
+window.submitReport = async () => {
+  const title = document.getElementById('report-title').value.trim();
+  const desc = document.getElementById('report-desc').value.trim();
+  if (!title || !desc) { showStatus('report-status','Please fill in all fields'); return; }
+  showStatus('report-status','Submitting...','info');
+  try {
+    await addDoc(collection(db, 'issue_reports'), {
+      farmer_uid: currentUser.uid,
+      farmer_name: currentUserData.name,
+      title, description: desc, status: 'open',
+      submitted_at: serverTimestamp()
+    });
+    document.getElementById('report-title').value = '';
+    document.getElementById('report-desc').value = '';
+    showStatus('report-status','Report submitted successfully!','success');
+    showToast('Report sent to admin');
+  } catch(e) { showStatus('report-status','Error: ' + e.message); }
+};
+
+// ── NOTIFICATIONS ────────────────────────────────────────────
+window.loadNotifications = async () => {
+  const container = document.getElementById('notif-list');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const q = query(collection(db,'notifications'), where('uid','==',currentUser.uid), orderBy('created_at','desc'));
+    const snap = await getDocs(q);
+    if (snap.empty) { container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No notifications yet.</div>'; return; }
+    container.innerHTML = snap.docs.map(d => {
+      const n = d.data();
+      const time = n.created_at?.toDate?.()?.toLocaleDateString() || '';
+      return `<div class="notif-item" onclick="markNotifRead('${d.id}',this)">
+        <div class="notif-dot ${n.read ? 'read' : ''}"></div>
+        <div><div class="notif-title">${n.title}</div><div class="notif-body">${n.body}</div><div class="notif-time">${time}</div></div>
+      </div>`;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div class="status-msg status-error">${e.message}</div>`; }
+};
+
+window.markNotifRead = async (id, el) => {
+  await updateDoc(doc(db,'notifications',id), { read: true });
+  el.querySelector('.notif-dot').className = 'notif-dot read';
+};
+
+// ── FARMER PROFILE ───────────────────────────────────────────
+function populateFarmerProfile() {
+  if (!currentUserData) return;
+  document.getElementById('profile-name').textContent = currentUserData.name || 'Farmer';
+  document.getElementById('profile-avatar').textContent = (currentUserData.name || 'F')[0].toUpperCase();
+  document.getElementById('profile-location').textContent = currentUserData.location || '';
+  document.getElementById('profile-phone').value = currentUserData.phone || '';
+  document.getElementById('profile-location-input').value = currentUserData.location || '';
+}
+
+window.updateProfile = async () => {
+  const phone = document.getElementById('profile-phone').value.trim();
+  const location = document.getElementById('profile-location-input').value.trim();
+  try {
+    await updateDoc(doc(db,'users',currentUser.uid), { phone, location });
+    currentUserData.phone = phone;
+    currentUserData.location = location;
+    document.getElementById('profile-location').textContent = location;
+    showStatus('profile-status','Profile updated!','success');
+    showToast('Profile updated!');
+  } catch(e) { showStatus('profile-status','Error: ' + e.message); }
+};
+
+window.changePassword = async () => {
+  const np = document.getElementById('new-password').value;
+  const cp = document.getElementById('confirm-password').value;
+  if (np !== cp) { showStatus('profile-status','Passwords do not match'); return; }
+  if (np.length < 6) { showStatus('profile-status','Minimum 6 characters'); return; }
+  try {
+    await updatePassword(currentUser, np);
+    showStatus('profile-status','Password changed!','success');
+    showToast('Password updated!');
+  } catch(e) { showStatus('profile-status','Error: ' + e.message); }
+};
+
+// ── ADMIN DASHBOARD ──────────────────────────────────────────
+window.loadAdminStats = async () => {
+  try {
+    const [farmersSnap, devicesSnap, reportsSnap] = await Promise.all([
+      getDocs(query(collection(db,'users'), where('role','==','farmer'))),
+      getDocs(collection(db,'devices')),
+      getDocs(query(collection(db,'issue_reports'), where('status','==','open')))
+    ]);
+    document.getElementById('stat-farmers').textContent = farmersSnap.size;
+    document.getElementById('stat-devices').textContent = devicesSnap.size;
+    document.getElementById('stat-reports').textContent = reportsSnap.size;
+  } catch(e) { console.error(e); }
+};
+
+// ── ADMIN FARMERS ────────────────────────────────────────────
+window.loadFarmers = async () => {
+  const container = document.getElementById('farmers-list');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const snap = await getDocs(query(collection(db,'users'), where('role','==','farmer')));
+    if (snap.empty) { container.innerHTML = '<div class="card" style="text-align:center;padding:20px;color:var(--text-muted)">No farmers yet.</div>'; return; }
+    container.innerHTML = snap.docs.map(d => {
+      const f = d.data();
+      return `<div class="farmer-item" onclick="editFarmer('${d.id}','${f.name}','${f.email}','${f.phone||''}','${f.location||''}')">
+        <div class="farmer-avatar">${(f.name||'F')[0].toUpperCase()}</div>
+        <div class="farmer-info">
+          <div class="farmer-name">${f.name}</div>
+          <div class="farmer-detail">${f.email}</div>
+          <div class="farmer-detail">📍 ${f.location || 'No location'} • 📱 ${f.phone || 'No phone'}</div>
+          <div class="farmer-detail" style="color:var(--green-primary)">Device: ${f.device_id || 'Not assigned'}</div>
+        </div>
+        <span class="material-icons-round" style="color:var(--text-muted)">edit</span>
+      </div>`;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div class="card"><div class="status-msg status-error">${e.message}</div></div>`; }
+};
+
+window.editFarmer = (uid, name, email, phone, location) => {
+  editingFarmerUid = uid;
+  document.getElementById('add-farmer-title').textContent = 'Edit Farmer';
+  document.getElementById('af-name').value = name;
+  document.getElementById('af-email').value = email;
+  document.getElementById('af-phone').value = phone;
+  document.getElementById('af-location').value = location;
+  document.getElementById('af-password-group').style.display = 'none';
+  document.getElementById('af-submit-btn').innerHTML = '<span class="material-icons-round">save</span> UPDATE FARMER';
+  document.getElementById('af-delete-btn').style.display = 'flex';
+  document.getElementById('af-uid').value = uid;
+  showAdminScreen('screen-admin-add-farmer');
+};
+
+window.submitFarmer = async () => {
+  const name = document.getElementById('af-name').value.trim();
+  const email = document.getElementById('af-email').value.trim();
+  const phone = document.getElementById('af-phone').value.trim();
+  const location = document.getElementById('af-location').value.trim();
+  const password = document.getElementById('af-password').value.trim();
+  const uid = document.getElementById('af-uid').value;
+  if (!name || !email) { showStatus('af-status','Name and email required'); return; }
+  showStatus('af-status','Saving...','info');
+  try {
+    if (editingFarmerUid) {
+      await updateDoc(doc(db,'users',editingFarmerUid), { name, phone, location });
+      showStatus('af-status','Farmer updated!','success');
+      showToast('Farmer updated!');
+    } else {
+      if (!password) { showStatus('af-status','Password required'); return; }
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db,'users',cred.user.uid), {
+        uid: cred.user.uid, name, email, phone, location,
+        role: 'farmer', soil_type: 'Clay Loam',
+        plantation_date: '', device_id: '', created_at: serverTimestamp()
+      });
+      showStatus('af-status','Farmer created!','success');
+      showToast('Farmer account created!');
+    }
+    clearFarmerForm();
+  } catch(e) { showStatus('af-status','Error: ' + e.message); }
+};
+
+window.deleteFarmer = async () => {
+  const uid = document.getElementById('af-uid').value;
+  if (!uid || !confirm('Delete this farmer account?')) return;
+  try {
+    await deleteDoc(doc(db,'users',uid));
+    showToast('Farmer deleted');
+    showAdminScreen('screen-admin-farmers');
+    clearFarmerForm();
+  } catch(e) { showStatus('af-status','Error: ' + e.message); }
+};
+
+function clearFarmerForm() {
+  editingFarmerUid = null;
+  document.getElementById('add-farmer-title').textContent = 'Add Farmer';
+  ['af-name','af-email','af-phone','af-location','af-password'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('af-uid').value = '';
+  document.getElementById('af-password-group').style.display = 'flex';
+  document.getElementById('af-submit-btn').innerHTML = '<span class="material-icons-round">person_add</span> CREATE FARMER ACCOUNT';
+  document.getElementById('af-delete-btn').style.display = 'none';
+}
+
+// ── ADMIN DEVICES ────────────────────────────────────────────
+window.loadDevices = async () => {
+  const container = document.getElementById('devices-list');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const snap = await getDocs(collection(db,'devices'));
+    if (snap.empty) { 
+      container.innerHTML = '<div class="card" style="text-align:center;padding:20px;color:var(--text-muted)"><span style="font-size:36px">📡</span><br><br>No devices registered yet.<br><br><button class="btn btn-primary" onclick="openAddDeviceModal()" style="width:auto;margin-top:10px"><span class="material-icons-round">add</span> Add First Device</button></div>'; 
+      return; 
+    }
+    container.innerHTML = snap.docs.map(d => {
+      const dev = d.data();
+      const deviceId = d.id;
+      const status = dev.active ? '🟢 Active' : '🔴 Inactive';
+      const farmerInfo = dev.assigned_farmer_uid ? `Assigned to: ${dev.assigned_farmer_uid}` : '⚠️ Unassigned';
+      const lastSeen = dev.last_sync ? new Date(dev.last_sync.toDate()).toLocaleString() : 'Never';
+      
+      return `<div class="card" style="margin-bottom:12px;border-left:4px solid var(--green-primary)">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+          <span style="font-size:32px">📡</span>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:700;color:var(--text-dark)">${dev.device_name || dev.device_id}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Device ID: <span style="font-family:monospace;background:var(--green-bg);padding:2px 6px;border-radius:4px">${dev.device_id}</span></div>
+            <div style="font-size:12px;color:var(--text-muted)">${farmerInfo}</div>
+            <div style="font-size:12px;color:var(--text-muted)">Status: ${status}</div>
+            <div style="font-size:12px;color:var(--text-muted)">Last Sync: ${lastSeen}</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="btn btn-primary btn-sm" onclick="openEditDeviceModal('${deviceId}')">
+            <span class="material-icons-round" style="font-size:16px">edit</span> Edit
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="deleteDevice('${deviceId}','${dev.device_name || dev.device_id}')">
+            <span class="material-icons-round" style="font-size:16px">delete</span> Remove
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div class="card"><div class="status-msg status-error">${e.message}</div></div>`; }
+};
+
+window.openAddDeviceModal = () => { 
+  clearDeviceForm();
+  document.getElementById('device-modal-title').textContent = 'Register New Device';
+  document.getElementById('device-submit-btn').innerHTML = '<span class="material-icons-round">add_circle</span> REGISTER DEVICE';
+  document.getElementById('device-delete-btn').style.display = 'none';
+  document.getElementById('dev-id').disabled = false;
+  document.getElementById('dev-id').style.background = 'var(--green-bg)';
+  document.getElementById('add-device-modal').classList.add('active'); 
+};
+
+window.openEditDeviceModal = async (deviceId) => {
+  try {
+    const snap = await getDoc(doc(db, 'devices', deviceId));
+    if (!snap.exists()) {
+      showToast('Device not found');
+      return;
+    }
+    
+    const dev = snap.data();
+    
+    // Populate form
+    document.getElementById('dev-id').value = deviceId;
+    document.getElementById('dev-name').value = dev.device_name || '';
+    document.getElementById('dev-farmer-uid').value = dev.assigned_farmer_uid || '';
+    document.getElementById('dev-status').innerHTML = '';
+    document.getElementById('dev-status').style.display = 'none';
+    
+    // Update modal for edit mode
+    document.getElementById('device-modal-title').textContent = 'Edit Device';
+    document.getElementById('device-submit-btn').innerHTML = '<span class="material-icons-round">save</span> UPDATE DEVICE';
+    document.getElementById('device-delete-btn').style.display = 'block';
+    
+    // Make device ID read-only
+    document.getElementById('dev-id').disabled = true;
+    document.getElementById('dev-id').style.background = '#f0f0f0';
+    
+    // Store original ID for comparison
+    document.getElementById('dev-id').dataset.originalId = deviceId;
+    
+    document.getElementById('add-device-modal').classList.add('active');
+  } catch(e) {
+    showToast('Error loading device: ' + e.message);
+  }
+};
+
+window.closeAddDeviceModal = () => { document.getElementById('add-device-modal').classList.remove('active'); };
+
+function clearDeviceForm() {
+  document.getElementById('dev-id').value = '';
+  document.getElementById('dev-name').value = '';
+  document.getElementById('dev-farmer-uid').value = '';
+  document.getElementById('dev-status').innerHTML = '';
+  document.getElementById('dev-status').style.display = 'none';
+  document.getElementById('dev-id').dataset.originalId = '';
+}
+
+window.addDevice = async () => {
+  const deviceId = document.getElementById('dev-id').value.trim();
+  const deviceName = document.getElementById('dev-name').value.trim();
+  const farmerUid = document.getElementById('dev-farmer-uid').value.trim();
+  const originalId = document.getElementById('dev-id').dataset.originalId || '';
+  
+  if (!deviceId || !deviceName) { 
+    showStatus('dev-status','Device ID and name required'); 
+    return; 
+  }
+  
+  // If editing, use update function instead
+  if (originalId) {
+    await updateDevice();
+    return;
+  }
+  
+  showStatus('dev-status','Registering...','info');
+  try {
+    await setDoc(doc(db,'devices',deviceId), {
+      device_id: deviceId, 
+      device_name: deviceName,
+      assigned_farmer_uid: farmerUid, 
+      active: true, 
+      added_at: serverTimestamp()
+    });
+    
+    if (farmerUid) {
+      await updateDoc(doc(db,'users',farmerUid), { device_id: deviceId });
+    }
+    
+    showStatus('dev-status','Device registered!','success');
+    showToast('✓ Device registered successfully!');
+    closeAddDeviceModal();
+    loadDevices();
+  } catch(e) { 
+    showStatus('dev-status','Error: ' + e.message); 
+  }
+};
+
+window.updateDevice = async () => {
+  const deviceId = document.getElementById('dev-id').value.trim();
+  const deviceName = document.getElementById('dev-name').value.trim();
+  const farmerUid = document.getElementById('dev-farmer-uid').value.trim();
+  
+  if (!deviceName) { 
+    showStatus('dev-status','Device name required'); 
+    return; 
+  }
+  
+  showStatus('dev-status','Updating...','info');
+  try {
+    // Get current device data
+    const currentSnap = await getDoc(doc(db, 'devices', deviceId));
+    const currentData = currentSnap.data();
+    
+    // Update device in Firestore
+    await updateDoc(doc(db,'devices',deviceId), {
+      device_name: deviceName,
+      assigned_farmer_uid: farmerUid,
+      updated_at: serverTimestamp()
+    });
+    
+    // If farmer changed, update user document
+    if (farmerUid && farmerUid !== currentData.assigned_farmer_uid) {
+      // Update new farmer
+      await updateDoc(doc(db,'users',farmerUid), { device_id: deviceId });
+      
+      // Clear old farmer's device
+      if (currentData.assigned_farmer_uid) {
+        await updateDoc(doc(db,'users',currentData.assigned_farmer_uid), { device_id: '' });
+      }
+    }
+    
+    showStatus('dev-status','Device updated!','success');
+    showToast('✓ Device updated successfully!');
+    closeAddDeviceModal();
+    loadDevices();
+  } catch(e) { 
+    showStatus('dev-status','Error: ' + e.message); 
+  }
+};
+
+window.deleteDevice = async (deviceId, deviceName) => {
+  if (!confirm(`Delete device "${deviceName}"?\n\nThis action cannot be undone.`)) {
+    return;
+  }
+  
+  try {
+    // Get device data before deleting
+    const snap = await getDoc(doc(db, 'devices', deviceId));
+    const dev = snap.data();
+    
+    // Clear farmer's device reference
+    if (dev.assigned_farmer_uid) {
+      await updateDoc(doc(db,'users',dev.assigned_farmer_uid), { device_id: '' });
+    }
+    
+    // Delete device
+    await deleteDoc(doc(db,'devices',deviceId));
+    
+    showToast('✓ Device removed successfully!');
+    loadDevices();
+  } catch(e) { 
+    showToast('Error: ' + e.message); 
+  }
+};
+
+// ── ADMIN REPORTS ────────────────────────────────────────────
+window.loadReports = async () => {
+  const container = document.getElementById('reports-list');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const snap = await getDocs(query(collection(db,'issue_reports'), orderBy('submitted_at','desc')));
+    if (snap.empty) { container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No reports yet.</div>'; return; }
+    container.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      const time = r.submitted_at?.toDate?.()?.toLocaleDateString() || '';
+      return `<div class="report-item">
+        <div class="report-header">
+          <div class="report-title">${r.title}</div>
+          <span class="report-status ${r.status}">${r.status}</span>
+        </div>
+        <div class="report-body">${r.description}</div>
+        <div class="report-meta">By: ${r.farmer_name} • ${time}</div>
+        ${r.status === 'open' ? `<button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="resolveReport('${d.id}',this)"><span class="material-icons-round" style="font-size:16px">check_circle</span> Mark Resolved</button>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div class="status-msg status-error">${e.message}</div>`; }
+};
+
+window.resolveReport = async (id, btn) => {
+  await updateDoc(doc(db,'issue_reports',id), { status: 'resolved' });
+  btn.closest('.report-item').querySelector('.report-status').className = 'report-status resolved';
+  btn.closest('.report-item').querySelector('.report-status').textContent = 'resolved';
+  btn.remove();
+  showToast('Report marked as resolved');
+  loadAdminStats();
+};
+
+// ── ADMIN PROFILE ────────────────────────────────────────────
+function populateAdminProfile() {
+  if (!currentUserData) return;
+  document.getElementById('admin-name').textContent = currentUserData.name || 'Admin';
+  document.getElementById('admin-avatar').textContent = (currentUserData.name || 'A')[0].toUpperCase();
+  document.getElementById('admin-phone').value = currentUserData.phone || '';
+}
+
+window.updateAdminProfile = async () => {
+  const phone = document.getElementById('admin-phone').value.trim();
+  try {
+    await updateDoc(doc(db,'users',currentUser.uid), { phone });
+    currentUserData.phone = phone;
+    showStatus('admin-profile-status','Profile updated!','success');
+    showToast('Profile updated!');
+  } catch(e) { showStatus('admin-profile-status','Error: ' + e.message); }
+};
+
+window.changeAdminPassword = async () => {
+  const np = document.getElementById('admin-new-password').value;
+  const cp = document.getElementById('admin-confirm-password').value;
+  if (np !== cp) { showStatus('admin-profile-status','Passwords do not match'); return; }
+  try {
+    await updatePassword(currentUser, np);
+    showStatus('admin-profile-status','Password changed!','success');
+  } catch(e) { showStatus('admin-profile-status','Error: ' + e.message); }
+};
+
+window.loadAdminNotifications = async () => {
+  const container = document.getElementById('admin-notif-list');
+  container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const snap = await getDocs(query(collection(db,'notifications'), where('uid','==',currentUser.uid), orderBy('created_at','desc')));
+    if (snap.empty) { container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)">No notifications yet.</div>'; return; }
+    container.innerHTML = snap.docs.map(d => {
+      const n = d.data();
+      return `<div class="notif-item"><div class="notif-dot ${n.read?'read':''}"></div><div><div class="notif-title">${n.title}</div><div class="notif-body">${n.body}</div></div></div>`;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div class="status-msg status-error">${e.message}</div>`; }
+};
+
+// ── PWA INSTALL ──────────────────────────────────────────────
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.classList.add('show');
+});
+document.getElementById('install-banner')?.addEventListener('click', async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+  }
+});
+
+// Close modal on backdrop click
+document.getElementById('add-device-modal')?.addEventListener('click', (e) => {
+  if (e.target === document.getElementById('add-device-modal')) closeAddDeviceModal();
+});
+
+</script>
+
+<!-- PWA Install Banner -->
+<div id="install-banner">
+  <span class="material-icons-round">install_mobile</span>
+  <span style="flex:1;font-size:14px;font-weight:600">Install RiceSense App</span>
+  <span class="material-icons-round">chevron_right</span>
+</div>
+
+</body>
+</html>
